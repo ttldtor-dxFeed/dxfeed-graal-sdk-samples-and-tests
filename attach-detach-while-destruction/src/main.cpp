@@ -82,8 +82,11 @@ void detachThead() {
                   << ", graalIsolateThreadHandle = " << graalIsolateThreadHandle << std::endl;
     }
 
-    if (graalCurrentThreadHandle == nullptr || graalCurrentThreadHandle == graalIsolateThreadHandle) {
-        return;
+    {
+        std::lock_guard l{graalCurrentThreadHandleMutex};
+        if (graalCurrentThreadHandle == nullptr || graalCurrentThreadHandle == graalIsolateThreadHandle) {
+            return;
+        }
     }
 
     auto result = graal_detach_thread(graalCurrentThreadHandle);
